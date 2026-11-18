@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#040a08" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Una historia que todavía estamos escribiendo</title>
+
+  <style>
+    /* ==========================================================================
+       1. VARIABLES DE IDENTIDAD VISUAL (PALETA ROMANTASY / REALEZA ANTIGUA)
+       ========================================================================== */
+    :root {
+      --bg-void: #040a08;
+      --bg-emerald-deep: #071a14;
+      --bg-emerald-mid: #0d2b22;
+      --bg-emerald-light: #143d30;
+
+      --gold-dark: #8c6a2b;
+      --gold-main: #c9a252;
+      --gold-light: #e5c47b;
+      --gold-glow: rgba(229, 196, 123, 0.35);
+
+      --parchment-light: #f4ebd9;
+      --parchment-base: #efe3cb;
+      --parchment-edge: #e2d1b3;
+      --parchment-shadow: #cbb48c;
+
+      --ink-primary: #1f1912;
+      --ink-secondary: #3b3023;
+      --ink-muted: #5c4b37;
+      --ember-accent: #b85d28;
+
+      --font-editorial: 'Baskerville', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif;
+      --font-display: 'Palatino Linotype', 'Book Antiqua', Palatino, 'Baskerville', Georgia, serif;
+
+      --ease-royal: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-book: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    /* ==========================================================================
+       2. RESET Y BASE OPTIMIZADA PARA SAFARI iOS
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+      background-color: var(--bg-void);
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100%;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse at 50% 18%, rgba(20, 61, 48, 0.55) 0%, rgba(7, 26, 20, 0.92) 55%, var(--bg-void) 100%);
+      color: var(--parchment-light);
+      font-family: var(--font-editorial);
+      line-height: 1.65;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Viñeta atmosférica sutil alrededor de toda la pantalla */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, transparent 48%, rgba(2, 6, 5, 0.72) 100%);
+      z-index: 1;
+    }
+
+    /* Lienzo de estrellas doradas y ascuas flotantes */
+    #magic-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Contenedor principal de la aplicación */
+    .realm-stage {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 660px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ==========================================================================
+       3. VISTA 1: PRIMERA PANTALLA Y LIBRO INTERACTIVO 3D
+       ========================================================================== */
+    .cover-scene {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: opacity 0.8s var(--ease-royal), transform 0.8s var(--ease-royal), visibility 0.8s;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .cover-scene.is-hidden {
+      opacity: 0;
+      transform: translateY(-16px) scale(0.97);
+      pointer-events: none;
+      visibility: hidden;
+      position: absolute;
+      top: 0;
+    }
+
+    /* Emblema celestial superior */
+    .celestial-crest {
+      width: 150px;
+      height: 28px;
+      margin-bottom: 10px;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 8px rgba(201, 162, 82, 0.35));
+    }
+
+    /* Texto superior EXACTO */
+    .top-proclamation {
+      font-size: clamp(0.92rem, 3.6vw, 1.08rem);
+      font-style: italic;
+      color: var(--gold-light);
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+      max-width: 540px;
+      margin-bottom: 14px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+      padding: 0 6px;
+    }
+
+    /* Título principal */
+    .main-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.68rem, 6.4vw, 2.5rem);
+      font-weight: 400;
+      color: var(--parchment-light);
+      line-height: 1.2;
+      letter-spacing: 0.03em;
+      max-width: 580px;
+      margin-bottom: 12px;
+      text-shadow:
+        0 2px 14px rgba(0, 0, 0, 0.9),
+        0 0 28px rgba(201, 162, 82, 0.22);
+    }
+
+    /* Separador ornamental */
+    .ornate-divider {
+      width: 210px;
+      height: 18px;
+      margin: 2px auto 12px;
+      opacity: 0.85;
+    }
+
+    /* Frase debajo del título EXACTO */
+    .hero-subtitle {
+      font-size: clamp(0.92rem, 3.5vw, 1.05rem);
+      color: #d9ceb8;
+      line-height: 1.55;
+      max-width: 520px;
+      margin-bottom: 26px;
+      padding: 0 8px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+    }
+
+    /* ==========================================================================
+       4. LIBRO FÍSICO TRIDIMENSIONAL (SAFARI iOS 3D COMPATIBLE)
+       ========================================================================== */
+    .book-pedestal {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0 16px;
+      -webkit-perspective: 1600px;
+      perspective: 1600px;
+    }
+
+    /* Halo dorado respirando detrás del libro */
+    .book-aura {
+      position: absolute;
+      width: min(310px, 82vw);
+      height: min(390px, 102vw);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 162, 82, 0.22) 0%, rgba(184, 93, 40, 0.08) 45%, transparent 72%);
+      filter: blur(18px);
+      pointer-events: none;
+      animation: auraPulse 5s ease-in-out infinite;
+    }
+
+    @keyframes auraPulse {
+      0%, 100% { transform: scale(0.96); opacity: 0.75; }
+      50% { transform: scale(1.04); opacity: 1; }
+    }
+
+    /* Contenedor interactivo del libro */
+    .book-3d {
+      position: relative;
+      width: min(272px, 74vw);
+      height: min(374px, 102vw);
+      max-height: 410px;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+      -webkit-transform: rotateY(-12deg) rotateX(6deg);
+      transform: rotateY(-12deg) rotateX(6deg);
+      transition: transform 1.2s var(--ease-book);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .book-3d:hover {
+      -webkit-transform: rotateY(-6deg) rotateX(4deg) translateY(-4px);
+      transform: rotateY(-6deg) rotateX(4deg) translateY(-4px);
+    }
+
+    .book-3d:active {
+      -webkit-transform: rotateY(-4deg) rotateX(2deg) scale(0.99);
+      transform: rotateY(-4deg) rotateX(2deg) scale(0.99);
+    }
+
+    /* Estado abierto del libro: se centra y desplaza ligeramente para acomodar la tapa abierta */
+    .book-3d.is-open {
+      -webkit-transform: rotateY(0deg) rotateX(2deg) translateX(18%);
+      transform: rotateY(0deg) rotateX(2deg) translateX(18%);
+      cursor: default;
+    }
+
+    @media (max-width: 480px) {
+      .book-3d.is-open {
+        -webkit-transform: rotateY(0deg) rotateX(2deg) translateX(14%);
+        transform: rotateY(0deg) rotateX(2deg) translateX(14%);
+      }
+    }
+
+    /* Sombra realista bajo el libro */
+    .book-drop-shadow {
+      position: absolute;
+      bottom: -18px;
+      left: 6%;
+      width: 92%;
+      height: 28px;
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 55%, transparent 78%);
+      filter: blur(8px);
+      pointer-events: none;
+      transition: transform 1.2s var(--ease-book), opacity 1.2s var(--ease-book);
+    }
+
+    .book-3d.is-open + .book-drop-shadow {
+      transform: scaleX(1.22);
+      opacity: 0.75;
+    }
+
+    /* Contratapa trasera del libro */
+    .book-back-cover {
+      position: absolute;
+      inset: 0;
+      border-radius: 4px 12px 12px 4px;
+      background: linear-gradient(145deg, #061611 0%, #0a241c 60%, #040d0a 100%);
+      border: 1px solid rgba(140, 106, 43, 0.55);
+      box-shadow:
+        -10px 14px 28px rgba(0, 0, 0, 0.85),
+        inset 0 0 18px rgba(0, 0, 0, 0.8);
+      -webkit-transform: translateZ(-18px);
+      transform: translateZ(-18px);
+    }
+
+    /* Lomo lateral izquierdo del libro */
+    .book-spine {
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      left: -17px;
+      width: 34px;
+      background:
+        linear-gradient(90deg,
+          #040e0b 0%,
+          #0d2c22 28%,
+          #133c2f 50%,
+          #081d16 80%,
+          #030a08 100%);
+      border-top: 1px solid rgba(201, 162, 82, 0.45);
+      border-bottom: 1px solid rgba(201, 162, 82, 0.45);
+      border-radius: 4px 0 0 4px;
+      -webkit-transform: rotateY(-90deg) translateZ(0px);
+      transform: rotateY(-90deg) translateZ(0px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center;
+      padding: 24px 0;
+    }
+
+    /* Nervaduras doradas en el lomo */
+    .spine-rib {
+      width: 82%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold-main), var(--gold-light), var(--gold-main), transparent);
+      border-radius: 2px;
+      opacity: 0.75;
+    }
+
+    /* Bloque de páginas marfil (canto derecho e inferior visible) */
+    .book-pages-block {
+      position: absolute;
+      top: 6px;
+      bottom: 6px;
+      left: 4px;
+      right: 6px;
+      border-radius: 2px 10px 10px 2px;
+      background:
+        linear-gradient(90deg, #cbb692 0%, #ede0c6 8%, #f5ecda 88%, #d6c3a1 100%);
+      box-shadow:
+        inset -3px 0 6px rgba(92, 75, 55, 0.35),
+        inset 0 -3px 6px rgba(92, 75, 55, 0.25),
+        4px 2px 0 #dfd0b2,
+        7px 4px 0 #cbb894,
+        10px 6px 0 #b7a27d;
+      -webkit-transform: translateZ(-2px);
+      transform: translateZ(-2px);
+      overflow: hidden;
+    }
+
+    /* Rayas finas simulando el grosor de cientos de hojas */
+    .book-pages-block::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(120, 96, 65, 0.22) 0px,
+        rgba(120, 96, 65, 0.22) 1px,
+        transparent 1px,
+        transparent 2.5px
+      );
+    }
+
+    /* ==========================================================================
+       5. PÁGINA INTERIOR DE DEDICATORIA (TEXTO INVERTIDO 180 GRADOS)
+       ========================================================================== */
+    .dedication-page {
+      position: absolute;
+      inset: 0;
+      padding: 18px 16px;
+      background:
+        radial-gradient(circle at 50% 50%, #f7efe0 0%, #ecdec3 78%, #dcc9a5 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--ink-primary);
+      box-shadow: inset 14px 0 24px rgba(59, 48, 35, 0.22);
+    }
+
+    .dedication-frame {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(140, 106, 43, 0.55);
+      border-radius: 4px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .dedication-frame::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px dashed rgba(140, 106, 43, 0.35);
+      pointer-events: none;
+    }
+
+    /* Contenedor rotado exactamente 180 grados sin cortarse ni desbordarse */
+    .dedication-inverted-box {
+      -webkit-transform: rotate(180deg);
+      transform: rotate(180deg);
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 4px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .dedication-star-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--gold-dark);
+      flex-shrink: 0;
+    }
+
+    .dedication-text {
+      font-family: var(--font-editorial);
+      font-style: italic;
+      font-size: clamp(0.95rem, 3.8vw, 1.15rem);
+      line-height: 1.48;
+      color: var(--ink-primary);
+      font-weight: 500;
+      max-width: 100%;
+    }
+
+    /* ==========================================================================
+       6. TAPA FRONTAL ARTICULADA DEL LIBRO 3D
+       ========================================================================== */
+    .book-front-cover {
+      position: absolute;
+      inset: 0;
+      -webkit-transform-origin: left center;
+      transform-origin: left center;
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+      -webkit-transform: translateZ(16px) rotateY(0deg);
+      transform: translateZ(16px) rotateY(0deg);
+      transition: transform 1.45s var(--ease-book);
+      border-radius: 4px 12px 12px 4px;
+    }
+
+    .book-3d.is-open .book-front-cover {
+      -webkit-transform: translateZ(16px) rotateY(-148deg);
+      transform: translateZ(16px) rotateY(-148deg);
+    }
+
+    /* Cara exterior de la portada (verde esmeralda oscuro y oro envejecido) */
+    .cover-front-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 4px 12px 12px 4px;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(25, 77, 60, 0.45) 0%, transparent 60%),
+        linear-gradient(155deg, #0b261e 0%, #071913 48%, #040f0b 100%);
+      border: 1.5px solid rgba(201, 162, 82, 0.72);
+      box-shadow:
+        inset 12px 0 18px rgba(0, 0, 0, 0.65),
+        inset -2px 0 4px rgba(229, 196, 123, 0.25),
+        inset 0 0 28px rgba(0, 0, 0, 0.55);
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Textura sutil de encuadernación en cuero antiguo */
+    .cover-front-face::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.14;
+      background-image:
+        radial-gradient(rgba(229, 196, 123, 0.35) 0.7px, transparent 0.7px),
+        radial-gradient(rgba(0, 0, 0, 0.8) 0.7px, transparent 0.7px);
+      background-size: 12px 12px;
+      background-position: 0 0, 6px 6px;
+      pointer-events: none;
+    }
+
+    /* Hendidura clásica junto al lomo */
+    .cover-hinge-groove {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 12px;
+      width: 3px;
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0.85), rgba(201, 162, 82, 0.32), rgba(0, 0, 0, 0.6));
+      pointer-events: none;
+    }
+
+    /* Marco interior dorado grabado en la portada */
+    .cover-gold-border {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      margin-left: 8px;
+      border: 1.5px solid rgba(201, 162, 82, 0.75);
+      border-radius: 3px 8px 8px 3px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 0 12px rgba(201, 162, 82, 0.15);
+    }
+
+    .cover-gold-border::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(201, 162, 82, 0.38);
+      border-radius: 2px 6px 6px 2px;
+      pointer-events: none;
+    }
+
+    /* Esquineros ornamentales SVG */
+    .corner-filigree {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      color: var(--gold-main);
+      pointer-events: none;
+    }
+    .corner-tl { top: 3px; left: 3px; }
+    .corner-tr { top: 3px; right: 3px; transform: scaleX(-1); }
+    .corner-bl { bottom: 3px; left: 3px; transform: scaleY(-1); }
+    .corner-br { bottom: 3px; right: 3px; transform: scale(-1, -1); }
+
+    /* Emblema central de corona, estrellas y llama */
+    .cover-royal-emblem {
+      width: 68px;
+      height: 68px;
+      margin-top: 4px;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+    }
+
+    /* Título grabado en oro en la portada */
+    .cover-book-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.06rem, 4.1vw, 1.26rem);
+      font-weight: 400;
+      line-height: 1.32;
+      letter-spacing: 0.03em;
+      text-align: center;
+      background: linear-gradient(180deg, #f3dc9f 0%, #c9a252 55%, #9d7730 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.9));
+      padding: 0 4px;
+    }
+
+    /* Subtítulo inferior del libro */
+    .cover-book-edition {
+      font-size: clamp(0.68rem, 2.6vw, 0.76rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      opacity: 0.88;
+      text-align: center;
+      margin-bottom: 4px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Cara interior de la tapa frontal (visible al abrirse hacia la izquierda) */
+    .cover-inside-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px 4px 4px 12px;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-transform: rotateY(180deg);
+      transform: rotateY(180deg);
+      background:
+        radial-gradient(circle at center, #0d2b22 0%, #061611 100%);
+      border: 1.5px solid rgba(201, 162, 82, 0.65);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset -10px 0 20px rgba(0, 0, 0, 0.65);
+    }
+
+    .cover-inside-pattern {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(201, 162, 82, 0.45);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+    }
+
+    /* ==========================================================================
+       7. CONTROLES DE LA ESCENA INICIAL (INDICACIÓN TÁCTIL Y BOTÓN DE CONTINUAR)
+       ========================================================================== */
+    .book-prompt-area {
+      min-height: 54px;
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .tap-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      letter-spacing: 0.06em;
+      color: var(--gold-light);
+      opacity: 0.9;
+      animation: gentleFloat 2.8s ease-in-out infinite;
+      transition: opacity 0.4s ease;
+    }
+
+    .tap-hint.is-hidden {
+      display: none;
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); opacity: 0.78; }
+      50% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* Botón estilo sello real dorado */
+    .royal-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(180deg, rgba(20, 61, 48, 0.95) 0%, rgba(9, 31, 24, 0.98) 100%);
+      border: 1px solid var(--gold-main);
+      color: var(--gold-light);
+      font-family: var(--font-editorial);
+      font-size: 0.96rem;
+      letter-spacing: 0.06em;
+      padding: 12px 24px;
+      min-height: 46px;
+      border-radius: 999px;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.65),
+        inset 0 0 12px rgba(201, 162, 82, 0.18);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, opacity 0.5s ease;
+    }
+
+    .royal-btn:hover {
+      background: linear-gradient(180deg, rgba(27, 79, 62, 0.98) 0%, rgba(13, 43, 34, 1) 100%);
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.75),
+        0 0 16px rgba(201, 162, 82, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .royal-btn:active {
+      transform: scale(0.97);
+    }
+
+    .continue-letter-btn {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .continue-letter-btn.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       8. VISTA 2: CARTA PRINCIPAL EN PERGAMINO ANTIGUO
+       ========================================================================== */
+    .letter-scene {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(18px) scale(0.98);
+      transition: opacity 0.85s var(--ease-royal), transform 0.85s var(--ease-royal);
+    }
+
+    .letter-scene.is-active {
+      display: flex;
+    }
+
+    .letter-scene.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Pergamino principal */
+    .parchment-book {
+      position: relative;
+      width: 100%;
+      background:
+        radial-gradient(ellipse at 20% 15%, rgba(255, 252, 244, 0.75) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(214, 192, 155, 0.45) 0%, transparent 60%),
+        linear-gradient(165deg, var(--parchment-light) 0%, var(--parchment-base) 52%, var(--parchment-edge) 100%);
+      color: var(--ink-primary);
+      border-radius: 10px 16px 16px 10px;
+      padding: clamp(22px, 5.5vw, 40px) clamp(18px, 5.2vw, 38px);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.88),
+        0 0 0 1px rgba(201, 162, 82, 0.65),
+        inset 0 0 38px rgba(158, 126, 78, 0.34),
+        inset 10px 0 18px rgba(92, 70, 40, 0.16),
+        6px 6px 0 -1px #d7c4a1,
+        11px 11px 0 -2px #bfa880;
+      overflow: hidden;
+    }
+
+    /* Textura sutil de fibras de papel antiguo */
+    .parchment-book::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.28;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(139, 111, 71, 0.04) 0px, rgba(139, 111, 71, 0.04) 1px, transparent 1px, transparent 4px),
+        radial-gradient(rgba(120, 92, 54, 0.12) 0.6px, transparent 0.6px);
+      background-size: 100% 4px, 18px 18px;
+      pointer-events: none;
+    }
+
+    /* Marco interior dorado en el pergamino */
+    .parchment-inner-border {
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(140, 106, 43, 0.5);
+      border-radius: 6px 10px 10px 6px;
+      padding: clamp(20px, 4.8vw, 34px) clamp(16px, 4.5vw, 30px);
+      min-height: 390px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .parchment-inner-border::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(140, 106, 43, 0.24);
+      border-radius: 4px 8px 8px 4px;
+      pointer-events: none;
+    }
+
+    /* Cabecera superior del pergamino (número de capítulo / indicador) */
+    .parchment-header-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(140, 106, 43, 0.32);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+    }
+
+    /* Páginas individuales de la carta */
+    .letter-page {
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+      animation: pageReveal 0.65s var(--ease-royal) forwards;
+    }
+
+    .letter-page.is-active {
+      display: flex;
+    }
+
+    @keyframes pageReveal {
+      from {
+        opacity: 0;
+        transform: translateX(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .letter-page.slide-back {
+      animation: pageRevealBack 0.65s var(--ease-royal) forwards;
+    }
+
+    @keyframes pageRevealBack {
+      from {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Encabezado de la carta */
+    .letter-salutation {
+      font-family: var(--font-display);
+      font-size: clamp(1.38rem, 5.4vw, 1.85rem);
+      font-weight: 400;
+      color: var(--ink-primary);
+      line-height: 1.3;
+      margin-bottom: 4px;
+      letter-spacing: 0.01em;
+    }
+
+    /* Párrafos de la carta */
+    .letter-paragraph {
+      font-size: clamp(1.02rem, 3.9vw, 1.14rem);
+      line-height: 1.78;
+      color: var(--ink-secondary);
+      text-align: left;
+      word-wrap: break-word;
+    }
+
+    /* Letra capitular elegante estilo libro antiguo en el primer párrafo */
+    .drop-cap::first-letter {
+      float: left;
+      font-family: var(--font-display);
+      font-size: 3.1em;
+      line-height: 0.82;
+      padding-top: 4px;
+      padding-right: 10px;
+      padding-bottom: 2px;
+      color: var(--gold-dark);
+      text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    /* Ornamento discreto entre páginas */
+    .page-fleuron {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 6px 0 2px;
+      color: var(--gold-dark);
+      opacity: 0.75;
+    }
+
+    /* ==========================================================================
+       LÁMINA DE RECUERDO FOTOGRÁFICO GUARDADO ENTRE LAS PÁGINAS (FOLIO II)
+       ========================================================================== */
+    .keepsake-photo-wrap {
+      margin: 12px auto 6px;
+      width: 100%;
+      max-width: 248px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .keepsake-photo-frame {
+      position: relative;
+      width: 100%;
+      padding: 9px;
+      background:
+        linear-gradient(145deg, #fbf4e6 0%, #eadbc0 55%, #dcc7a1 100%);
+      border: 1px solid rgba(140, 106, 43, 0.72);
+      border-radius: 6px;
+      box-shadow:
+        0 10px 24px rgba(31, 25, 18, 0.28),
+        0 2px 6px rgba(31, 25, 18, 0.18),
+        inset 0 0 12px rgba(140, 106, 43, 0.22);
+      transform: rotate(-1.2deg);
+      transition: transform 0.55s var(--ease-royal), box-shadow 0.55s var(--ease-royal);
+    }
+
+    .keepsake-photo-frame:hover,
+    .keepsake-photo-frame:active {
+      transform: rotate(0deg) scale(1.015);
+      box-shadow:
+        0 14px 30px rgba(31, 25, 18, 0.34),
+        0 0 16px rgba(201, 162, 82, 0.25);
+    }
+
+    /* Doble filete interior dorado alrededor de la imagen */
+    .keepsake-photo-inner {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      max-height: 295px;
+      border-radius: 3px;
+      overflow: hidden;
+      border: 1px solid rgba(140, 106, 43, 0.55);
+      background-color: #161412;
+    }
+
+    .keepsake-photo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 55%;
+      display: block;
+      /* Matiz cálido de recuerdo antiguo impreso sin perder contraste */
+      filter: sepia(0.16) contrast(1.04) brightness(0.98);
+    }
+
+    /* Viñeta sutil y brillo de papel fotográfico antiguo */
+    .keepsake-photo-inner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 22px rgba(26, 20, 13, 0.42);
+      background: linear-gradient(135deg, rgba(255, 248, 231, 0.14) 0%, transparent 45%, rgba(31, 25, 18, 0.16) 100%);
+    }
+
+    /* Esquineros ornamentales en oro envejecido sujetando la lámina */
+    .keepsake-corner {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      color: var(--gold-dark);
+      z-index: 2;
+      pointer-events: none;
+      filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.6));
+    }
+    .keepsake-corner-tl { top: 2px; left: 2px; }
+    .keepsake-corner-tr { top: 2px; right: 2px; transform: scaleX(-1); }
+    .keepsake-corner-bl { bottom: 2px; left: 2px; transform: scaleY(-1); }
+    .keepsake-corner-br { bottom: 2px; right: 2px; transform: scale(-1, -1); }
+
+    /* Bloque de firma en la Página 2 */
+    .letter-signature-block {
+      margin-top: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(140, 106, 43, 0.28);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+      gap: 4px;
+    }
+
+    .signature-lead {
+      font-size: clamp(1rem, 3.8vw, 1.12rem);
+      font-style: italic;
+      color: var(--ink-secondary);
+    }
+
+    .signature-author {
+      font-family: var(--font-display);
+      font-size: clamp(1.06rem, 4vw, 1.2rem);
+      font-style: italic;
+      color: var(--ink-primary);
+      font-weight: 600;
+    }
+
+    /* Sello de lacre dorado/esmeralda al final */
+    .wax-seal-row {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .wax-seal {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #1a4d3c 0%, #0b261e 65%, #05130f 100%);
+      border: 2px solid var(--gold-main);
+      box-shadow:
+        0 4px 10px rgba(31, 25, 18, 0.35),
+        inset 0 0 8px rgba(229, 196, 123, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-light);
+    }
+
+    /* Pie de navegación dentro del pergamino */
+    .parchment-footer-nav {
+      margin-top: 26px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(140, 106, 43, 0.32);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .page-nav-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(140, 106, 43, 0.1);
+      border: 1px solid rgba(140, 106, 43, 0.55);
+      color: var(--ink-primary);
+      font-family: var(--font-editorial);
+      font-size: 0.9rem;
+      padding: 10px 16px;
+      min-height: 44px;
+      border-radius: 999px;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.25s ease, transform 0.2s ease, opacity 0.25s ease;
+    }
+
+    .page-nav-btn:hover:not(:disabled) {
+      background: rgba(140, 106, 43, 0.22);
+    }
+
+    .page-nav-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .page-nav-btn:disabled {
+      opacity: 0.32;
+      cursor: default;
+    }
+
+    .page-indicator-pill {
+      font-size: 0.84rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* Botón inferior fuera del pergamino para volver al libro/inicio */
+    .secondary-controls {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .ghost-royal-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(7, 26, 20, 0.72);
+      border: 1px solid rgba(201, 162, 82, 0.45);
+      color: var(--gold-light);
+      font-family: var(--font-editorial);
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      padding: 10px 18px;
+      min-height: 44px;
+      border-radius: 999px;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+    }
+
+    .ghost-royal-btn:hover {
+      background: rgba(13, 43, 34, 0.92);
+      border-color: var(--gold-main);
+    }
+
+    .ghost-royal-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ==========================================================================
+       9. AJUSTES RESPONSIVE FINOS PARA PANTALLAS PEQUEÑAS (iPhone SE / Mini / Pro)
+       ========================================================================== */
+    @media (max-width: 390px) {
+      .parchment-book {
+        padding: 16px 12px;
+      }
+      .parchment-inner-border {
+        padding: 16px 14px;
+        min-height: 360px;
+      }
+      .page-nav-btn {
+        padding: 9px 12px;
+        font-size: 0.85rem;
+      }
+      .dedication-page {
+        padding: 12px 10px;
+      }
+      .dedication-frame {
+        padding: 10px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo atmosférico de estrellas doradas y ascuas flotantes -->
+  <canvas id="magic-canvas" aria-hidden="true"></canvas>
+
+  <main class="realm-stage">
+
+    <!-- ========================================================================
+         PANTALLA 1: PORTADA CELESTIAL Y LIBRO TRIDIMENSIONAL INTERACTIVO
+         ======================================================================== -->
+    <section id="cover-scene" class="cover-scene" aria-label="Portada del libro">
+
+      <!-- Corona y estrellas en filigrana dorada -->
+      <svg class="celestial-crest" viewBox="0 0 180 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 22H62M118 22H170" stroke="#c9a252" stroke-width="0.9" stroke-opacity="0.65"/>
+        <circle cx="48" cy="22" r="1.6" fill="#e5c47b"/>
+        <circle cx="132" cy="22" r="1.6" fill="#e5c47b"/>
+        <!-- Estrellas laterales -->
+        <path d="M69 14L70.3 17.7L74 19L70.3 20.3L69 24L67.7 20.3L64 19L67.7 17.7L69 14Z" fill="#e5c47b"/>
+        <path d="M111 14L112.3 17.7L116 19L112.3 20.3L111 24L109.7 20.3L106 19L109.7 17.7L111 14Z" fill="#e5c47b"/>
+        <!-- Corona central -->
+        <path d="M78 24L81 12L86.5 18L90 9L93.5 18L99 12L102 24H78Z" stroke="#e5c47b" stroke-width="1.3" fill="rgba(201,162,82,0.18)"/>
+        <path d="M77 26.5H103" stroke="#c9a252" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+
+      <!-- Texto superior EXACTO -->
+      <p class="top-proclamation">No te falta corona de fuego para saber que eres mi soberana absoluta. Feliz día a mi princesa❤️‍🩹</p>
+
+      <!-- Título principal -->
+      <h1 class="main-hero-title">Una historia que todavía estamos escribiendo</h1>
+
+      <!-- Ornamento divisor -->
+      <svg class="ornate-divider" viewBox="0 0 220 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M12 10H92M128 10H208" stroke="url(#goldLine)" stroke-width="1"/>
+        <path d="M110 3L112.2 7.8L117 10L112.2 12.2L110 17L107.8 12.2L103 10L107.8 7.8L110 3Z" fill="#e5c47b"/>
+        <circle cx="97" cy="10" r="1.5" fill="#c9a252"/>
+        <circle cx="123" cy="10" r="1.5" fill="#c9a252"/>
+        <defs>
+          <linearGradient id="goldLine" x1="12" y1="10" x2="208" y2="10" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#c9a252" stop-opacity="0"/>
+            <stop offset="0.5" stop-color="#e5c47b" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#c9a252" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <!-- Frase debajo EXACTO -->
+      <p class="hero-subtitle">Hay historias que se leen, otras que se sueñan… y algunas que tenemos la suerte de vivir (exacto, la suerrte que tengo bb)</p>
+
+      <!-- Pedestal y Libro 3D Interactivo -->
+      <div class="book-pedestal">
+        <div class="book-aura" aria-hidden="true"></div>
+
+        <div id="interactive-book" class="book-3d" role="button" tabindex="0" aria-label="Toca el libro para abrirlo y leer su dedicatoria">
+          <!-- Contratapa trasera -->
+          <div class="book-back-cover" aria-hidden="true"></div>
+
+          <!-- Lomo del libro -->
+          <div class="book-spine" aria-hidden="true">
+            <span class="spine-rib"></span>
+            <span class="spine-rib"></span>
+            <span class="spine-rib"></span>
+            <span class="spine-rib"></span>
+          </div>
+
+          <!-- Bloque de hojas y página interior de dedicatoria -->
+          <div class="book-pages-block">
+            <div class="dedication-page">
+              <div class="dedication-frame">
+                <!-- Dedicatoria invertida verticalmente 180 grados -->
+                <div class="dedication-inverted-box">
+                  <svg class="dedication-star-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 2L14.1 8.9L21 11L14.1 13.1L12 20L9.9 13.1L3 11L9.9 8.9L12 2Z" stroke="currentColor" stroke-width="1.3" fill="rgba(201,162,82,0.2)"/>
+                  </svg>
+                  <p class="dedication-text">Para ti que sin saberlo, te convertiste en lo más lindo de este año</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tapa frontal articulada -->
+          <div class="book-front-cover">
+            <!-- Cara exterior de la portada -->
+            <div class="cover-front-face">
+              <div class="cover-hinge-groove" aria-hidden="true"></div>
+
+              <div class="cover-gold-border">
+                <!-- Esquineros dorados -->
+                <svg class="corner-filigree corner-tl" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+                  <path d="M2 24V6C2 3.79086 3.79086 2 6 2H24" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M6 16V8C6 6.89543 6.89543 6 8 6H16" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+                  <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+                </svg>
+                <svg class="corner-filigree corner-tr" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+                  <path d="M2 24V6C2 3.79086 3.79086 2 6 2H24" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M6 16V8C6 6.89543 6.89543 6 8 6H16" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+                  <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+                </svg>
+                <svg class="corner-filigree corner-bl" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+                  <path d="M2 24V6C2 3.79086 3.79086 2 6 2H24" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M6 16V8C6 6.89543 6.89543 6 8 6H16" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+                  <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+                </svg>
+                <svg class="corner-filigree corner-br" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+                  <path d="M2 24V6C2 3.79086 3.79086 2 6 2H24" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M6 16V8C6 6.89543 6.89543 6 8 6H16" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+                  <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+                </svg>
+
+                <!-- Emblema real de fuego, corona y estrellas -->
+                <svg class="cover-royal-emblem" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="40" cy="40" r="32" stroke="#c9a252" stroke-width="0.9" stroke-dasharray="2 3"/>
+                  <circle cx="40" cy="40" r="26" stroke="#e5c47b" stroke-width="1" stroke-opacity="0.7"/>
+                  <!-- Destello de fuego sutil detrás de la corona -->
+                  <path d="M40 16C43 23 49 27 47 35C46 39 42 41 40 41C38 41 34 39 33 35C31 27 37 23 40 16Z" fill="rgba(229,196,123,0.2)" stroke="#e5c47b" stroke-width="1"/>
+                  <!-- Corona real -->
+                  <path d="M26 48L29 35L35.5 41L40 31L44.5 41L51 35L54 48H26Z" fill="rgba(201,162,82,0.28)" stroke="#f0d592" stroke-width="1.4" stroke-linejoin="round"/>
+                  <path d="M25 51.5H55" stroke="#e5c47b" stroke-width="1.5" stroke-linecap="round"/>
+                  <!-- Tres estrellas inferiores -->
+                  <path d="M40 56L41 58.5L43.5 59.5L41 60.5L40 63L39 60.5L36.5 59.5L39 58.5L40 56Z" fill="#f0d592"/>
+                  <circle cx="31" cy="58" r="1.2" fill="#c9a252"/>
+                  <circle cx="49" cy="58" r="1.2" fill="#c9a252"/>
+                </svg>
+
+                <!-- Título en la portada del libro -->
+                <h2 class="cover-book-title">Una historia que todavía estamos escribiendo</h2>
+
+                <!-- Edición en letras pequeñas -->
+                <p class="cover-book-edition">Volumen único · Sin final escrito</p>
+              </div>
+            </div>
+
+            <!-- Cara interior de la tapa frontal al abrirse -->
+            <div class="cover-inside-face" aria-hidden="true">
+              <div class="cover-inside-pattern">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                  <path d="M22 4L25.5 18.5L40 22L25.5 25.5L22 40L18.5 25.5L4 22L18.5 18.5L22 4Z" stroke="#c9a252" stroke-width="1.1"/>
+                  <circle cx="22" cy="22" r="14" stroke="#c9a252" stroke-width="0.7" stroke-dasharray="2 2"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-drop-shadow" aria-hidden="true"></div>
+      </div>
+
+      <!-- Indicador táctil y botón para pasar a la carta -->
+      <div class="book-prompt-area">
+        <div id="tap-hint" class="tap-hint">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/>
+          </svg>
+          <span>Toca el libro para abrirlo</span>
+        </div>
+
+        <button id="open-letter-btn" type="button" class="royal-btn continue-letter-btn">
+          <span>Leer la carta</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PANTALLA 2: CARTA PRINCIPAL EN PERGAMINO ANTIGUO (DIVIDIDA EN PÁGINAS)
+         ======================================================================== -->
+    <section id="letter-scene" class="letter-scene" aria-label="Carta en pergamino antiguo">
+      <article class="parchment-book">
+        <div class="parchment-inner-border">
+
+          <!-- Cabecera editorial del pergamino -->
+          <header class="parchment-header-meta">
+            <span>Crónica Real · Día de las Princesas</span>
+            <span id="top-folio-label">Folio I</span>
+          </header>
+
+          <!-- PÁGINA 1 DE LA CARTA -->
+          <div id="letter-page-1" class="letter-page is-active">
+            <h2 class="letter-salutation">Mi Princesa Hermosa🧝🏻‍♀️</h2>
+
+            <p class="letter-paragraph drop-cap">No sé si las historias más bonitas están escritas entre páginas, escondidas en algún reino lejano o esperando a que alguien las encuentre. Pero sí sé que, desde que llegaste a mi vida, la mía tiene capítulos que no cambiaría por nada.</p>
+
+            <div class="page-fleuron" aria-hidden="true">
+              <svg width="96" height="16" viewBox="0 0 96 16" fill="none">
+                <path d="M8 8H38M58 8H88" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+                <path d="M48 2L50 6.2L54 8L50 9.8L48 14L46 9.8L42 8L46 6.2L48 2Z" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <p class="letter-paragraph">No necesito que nuestra historia sea perfecta ni que parezca sacada de un cuento. Me basta con seguir descubriéndote, compartir momentos contigo en nuestro reino (El Galpón😅), Salir en nuestro caballo (La Chimi❤️), pelear con las brujas(La “M” guiño guiño) y encontrar nuevas razones para elegirte.</p>
+          </div>
+
+          <!-- PÁGINA 2 DE LA CARTA (Nueva página diferenciada) -->
+          <div id="letter-page-2" class="letter-page">
+            <p class="letter-paragraph drop-cap">Y aunque el destino viene jugando a nuestro favor desde hace rato,si pudiera pedirle algo, sería que nos deje llenar muchísimas páginas más: de aventuras, complicidad, besos, abrazos, regaloneos y recuerdos que algún día recordemos felices</p>
+
+            <div class="page-fleuron" aria-hidden="true">
+              <svg width="96" height="16" viewBox="0 0 96 16" fill="none">
+                <path d="M8 8H38M58 8H88" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+                <path d="M48 2L50 6.2L54 8L50 9.8L48 14L46 9.8L42 8L46 6.2L48 2Z" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <p class="letter-paragraph">Hoy, en el día de las princesas, solo quería recordarte algo: para mí no eres especial por llevar una corona, sino por ser tú. Y qué suerte la mía de poder llamarte mi princesa.</p>
+
+            <!-- Recuerdo fotográfico guardado entre las páginas -->
+            <figure class="keepsake-photo-wrap" aria-label="Recuerdo fotográfico guardado en el libro">
+              <div class="keepsake-photo-frame">
+                <!-- Esquineros ornamentales estilo libro antiguo -->
+                <svg class="keepsake-corner keepsake-corner-tl" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M2 20V5C2 3.34315 3.34315 2 5 2H20" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M5 13V6.5C5 5.67157 5.67157 5 6.5 5H13" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+                  <circle cx="7.5" cy="7.5" r="1.3" fill="currentColor"/>
+                </svg>
+                <svg class="keepsake-corner keepsake-corner-tr" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M2 20V5C2 3.34315 3.34315 2 5 2H20" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M5 13V6.5C5 5.67157 5.67157 5 6.5 5H13" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+                  <circle cx="7.5" cy="7.5" r="1.3" fill="currentColor"/>
+                </svg>
+                <svg class="keepsake-corner keepsake-corner-bl" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M2 20V5C2 3.34315 3.34315 2 5 2H20" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M5 13V6.5C5 5.67157 5.67157 5 6.5 5H13" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+                  <circle cx="7.5" cy="7.5" r="1.3" fill="currentColor"/>
+                </svg>
+                <svg class="keepsake-corner keepsake-corner-br" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M2 20V5C2 3.34315 3.34315 2 5 2H20" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M5 13V6.5C5 5.67157 5.67157 5 6.5 5H13" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+                  <circle cx="7.5" cy="7.5" r="1.3" fill="currentColor"/>
+                </svg>
+
+                <div class="keepsake-photo-inner">
+                  <img
+                    src="E33CFA7B-21BA-459E-B6D8-7688970B6DC6.jpeg"
+                    alt="Nuestras manos entrelazadas sobre un libro"
+                    class="keepsake-photo-img"
+                    loading="lazy"
+                    onerror="this.onerror=null; this.src='https://placehold.co/450x600/0d2b22/e5c47b?text=Nuestro+Recuerdo';"
+                  />
+                </div>
+              </div>
+            </figure>
+
+            <!-- Firma exacta -->
+            <footer class="letter-signature-block">
+              <p class="signature-lead">Con todo mi cariño,</p>
+              <p class="signature-author">el que quiere seguir escribiendo esta historia contigo ♡</p>
+
+              <div class="wax-seal-row" aria-hidden="true">
+                <div class="wax-seal" title="Sello Real">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 16L7 8L10.5 11.5L12 6L13.5 11.5L17 8L19 16H5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M4.5 18.5H19.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+            </footer>
+          </div>
+
+          <!-- Navegación entre páginas del pergamino -->
+          <nav class="parchment-footer-nav" aria-label="Navegación de páginas de la carta">
+            <button id="prev-page-btn" type="button" class="page-nav-btn" disabled>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M19 12H5M11 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Anterior</span>
+            </button>
+
+            <span id="page-indicator" class="page-indicator-pill" aria-live="polite">Página 1 de 2</span>
+
+            <button id="next-page-btn" type="button" class="page-nav-btn">
+              <span>Siguiente</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </nav>
+
+        </div>
+      </article>
+
+      <!-- Botón discreto para volver a ver la dedicatoria o regresar al inicio -->
+      <div class="secondary-controls">
+        <button id="back-to-book-btn" type="button" class="ghost-royal-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke-linecap="round"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          <span>Volver a la dedicatoria e inicio</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /**
+     * Lógica interactiva de "Una historia que todavía estamos escribiendo"
+     * Optimizado para Safari en iPhone y navegadores móviles modernos.
+     */
+    (function () {
+      'use strict';
+
+      // Referencias al DOM
+      const coverScene = document.getElementById('cover-scene');
+      const letterScene = document.getElementById('letter-scene');
+      const interactiveBook = document.getElementById('interactive-book');
+      const tapHint = document.getElementById('tap-hint');
+      const openLetterBtn = document.getElementById('open-letter-btn');
+      const backToBookBtn = document.getElementById('back-to-book-btn');
+
+      const page1 = document.getElementById('letter-page-1');
+      const page2 = document.getElementById('letter-page-2');
+      const prevPageBtn = document.getElementById('prev-page-btn');
+      const nextPageBtn = document.getElementById('next-page-btn');
+      const pageIndicator = document.getElementById('page-indicator');
+      const topFolioLabel = document.getElementById('top-folio-label');
+
+      // Estado de la experiencia
+      let isBookOpened = false;
+      let currentPage = 1;
+      const totalPages = 2;
+      let autoAdvanceTimer = null;
+
+      /**
+       * Abre el libro 3D revelando la dedicatoria invertida (180°)
+       * y habilita el paso fluido hacia la carta principal.
+       */
+      function openBook() {
+        if (isBookOpened) return;
+        isBookOpened = true;
+
+        interactiveBook.classList.add('is-open');
+        interactiveBook.setAttribute('aria-expanded', 'true');
+        tapHint.classList.add('is-hidden');
+
+        // Mostrar botón "Leer la carta" justo cuando la tapa termina de abrirse
+        setTimeout(() => {
+          openLetterBtn.classList.add('is-visible');
+        }, 750);
+
+        // Transición automática suave tras dar tiempo suficiente para admirar la dedicatoria
+        autoAdvanceTimer = setTimeout(() => {
+          if (isBookOpened && !letterScene.classList.contains('is-active')) {
+            showLetterScene();
+          }
+        }, 4200);
+      }
+
+      /**
+       * Transiciona desde la escena del libro hacia la carta en pergamino.
+       */
+      function showLetterScene() {
+        if (autoAdvanceTimer) {
+          clearTimeout(autoAdvanceTimer);
+          autoAdvanceTimer = null;
+        }
+
+        coverScene.classList.add('is-hidden');
+        letterScene.classList.add('is-active');
+
+        // Forzar reflujo para activar suavemente la opacidad y escala
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            letterScene.classList.add('is-visible');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+      }
+
+      /**
+       * Regresa a la primera pantalla y cierra el libro suavemente
+       * para permitir volver a abrirlo y leer la dedicatoria.
+       */
+      function returnToCoverScene() {
+        if (autoAdvanceTimer) {
+          clearTimeout(autoAdvanceTimer);
+          autoAdvanceTimer = null;
+        }
+
+        letterScene.classList.remove('is-visible');
+
+        setTimeout(() => {
+          letterScene.classList.remove('is-active');
+          coverScene.classList.remove('is-hidden');
+
+          // Reiniciar libro a estado cerrado para revivir la animación
+          isBookOpened = false;
+          interactiveBook.classList.remove('is-open');
+          interactiveBook.setAttribute('aria-expanded', 'false');
+          openLetterBtn.classList.remove('is-visible');
+          tapHint.classList.remove('is-hidden');
+
+          // Restablecer la carta a la página 1 para la próxima lectura
+          setLetterPage(1, 'forward', false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 550);
+      }
+
+      /**
+       * Cambia entre la Página 1 y la Página 2 de la carta en pergamino.
+       * @param {number} targetPage - Número de página destino (1 o 2)
+       * @param {'forward'|'backward'} direction - Dirección de transición
+       * @param {boolean} shouldScroll - Si debe desplazarse suavemente al inicio del pergamino
+       */
+      function setLetterPage(targetPage, direction = 'forward', shouldScroll = true) {
+        if (targetPage < 1 || targetPage > totalPages) return;
+        currentPage = targetPage;
+
+        page1.classList.remove('is-active', 'slide-back');
+        page2.classList.remove('is-active', 'slide-back');
+
+        const activeEl = currentPage === 1 ? page1 : page2;
+        if (direction === 'backward') {
+          activeEl.classList.add('slide-back');
+        }
+        activeEl.classList.add('is-active');
+
+        // Actualizar indicadores y estado de botones
+        pageIndicator.textContent = `Página ${currentPage} de ${totalPages}`;
+        topFolioLabel.textContent = currentPage === 1 ? 'Folio I' : 'Folio II';
+
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
+
+        if (shouldScroll) {
+          const parchmentEl = document.querySelector('.parchment-book');
+          if (parchmentEl) {
+            parchmentEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
+      }
+
+      // Eventos táctiles y de teclado para el libro 3D
+      interactiveBook.addEventListener('click', () => {
+        if (!isBookOpened) {
+          openBook();
+        } else {
+          showLetterScene();
+        }
+      });
+
+      interactiveBook.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!isBookOpened) {
+            openBook();
+          } else {
+            showLetterScene();
+          }
+        }
+      });
+
+      // Eventos de botones principales
+      openLetterBtn.addEventListener('click', showLetterScene);
+      backToBookBtn.addEventListener('click', returnToCoverScene);
+
+      prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          setLetterPage(currentPage - 1, 'backward', true);
+        }
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          setLetterPage(currentPage + 1, 'forward', true);
+        }
+      });
+
+      // Soporte de deslizamiento táctil (swipe horizontal) en la carta para móviles
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      letterScene.addEventListener('touchstart', (e) => {
+        if (e.changedTouches && e.changedTouches.length > 0) {
+          touchStartX = e.changedTouches[0].screenX;
+          touchStartY = e.changedTouches[0].screenY;
+        }
+      }, { passive: true });
+
+      letterScene.addEventListener('touchend', (e) => {
+        if (!e.changedTouches || e.changedTouches.length === 0) return;
+        const deltaX = e.changedTouches[0].screenX - touchStartX;
+        const deltaY = e.changedTouches[0].screenY - touchStartY;
+
+        // Solo activar cambio de página si el gesto es claramente horizontal
+        if (Math.abs(deltaX) > 55 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+          if (deltaX < 0 && currentPage < totalPages) {
+            setLetterPage(currentPage + 1, 'forward', true);
+          } else if (deltaX > 0 && currentPage > 1) {
+            setLetterPage(currentPage - 1, 'backward', true);
+          }
+        }
+      }, { passive: true });
+
+      /**
+       * Sistema ligero de estrellas doradas titilantes y ascuas flotantes en Canvas
+       */
+      function initMagicAtmosphere() {
+        const canvas = document.getElementById('magic-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let width = 0;
+        let height = 0;
+        let particles = [];
+        let stars = [];
+
+        function resizeCanvas() {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          width = window.innerWidth;
+          height = window.innerHeight;
+          canvas.width = width * dpr;
+          canvas.height = height * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function createElements() {
+          const starCount = width < 500 ? 28 : 48;
+          const emberCount = width < 500 ? 18 : 30;
+
+          stars = Array.from({ length: starCount }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: Math.random() * 1.8 + 0.7,
+            phase: Math.random() * Math.PI * 2,
+            speed: Math.random() * 0.018 + 0.008,
+            isFourPoint: Math.random() > 0.65
+          }));
+
+          particles = Array.from({ length: emberCount }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * 1.9 + 0.6,
+            vy: -(Math.random() * 0.28 + 0.08),
+            vx: (Math.random() - 0.5) * 0.18,
+            alpha: Math.random() * 0.55 + 0.15,
+            isEmber: Math.random() > 0.78
+          }));
+        }
+
+        function drawFourPointStar(x, y, radius, alpha) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.fillStyle = `rgba(229, 196, 123, ${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(0, -radius * 2.2);
+          ctx.quadraticCurveTo(0, 0, radius * 2.2, 0);
+          ctx.quadraticCurveTo(0, 0, 0, radius * 2.2);
+          ctx.quadraticCurveTo(0, 0, -radius * 2.2, 0);
+          ctx.quadraticCurveTo(0, 0, 0, -radius * 2.2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        function render() {
+          ctx.clearRect(0, 0, width, height);
+
+          // Dibujar estrellas titilantes
+          for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            s.phase += s.speed;
+            const alpha = 0.2 + ((Math.sin(s.phase) + 1) * 0.5) * 0.65;
+
+            if (s.isFourPoint) {
+              drawFourPointStar(s.x, s.y, s.size, alpha);
+            } else {
+              ctx.fillStyle = `rgba(229, 196, 123, ${alpha})`;
+              ctx.beginPath();
+              ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+
+          // Dibujar partículas doradas y ascuas ascendentes
+          for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.y < -10) {
+              p.y = height + 10;
+              p.x = Math.random() * width;
+            }
+            if (p.x < -10) p.x = width + 10;
+            if (p.x > width + 10) p.x = -10;
+
+            ctx.fillStyle = p.isEmber
+              ? `rgba(217, 119, 54, ${p.alpha})`
+              : `rgba(229, 196, 123, ${p.alpha})`;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          requestAnimationFrame(render);
+        }
+
+        resizeCanvas();
+        createElements();
+        render();
+
+        window.addEventListener('resize', () => {
+          resizeCanvas();
+          createElements();
+        });
+      }
+
+      window.addEventListener('load', initMagicAtmosphere);
+    })();
+  </script>
+</body>
+</html>
